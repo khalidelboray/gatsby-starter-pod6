@@ -1,0 +1,256 @@
+//#!/usr/bin/env node
+/**
+ * 
+ * DESCRIPTION:  convert pod6 to js
+ *      AUTHOR:  Alex Zahatski ,  <zag@cpan.org>
+* 
+ */
+const log = (a) => JSON.stringify(a,null,2)
+const argv = require('yargs').argv
+const fs = require('fs')
+const makeAttrs = require('pod6/src/helpers/config').makeAttrs
+const wrapContent = require('pod6/src/helpers/handlers').wrapContent
+const { subUse, setFn } = require('pod6/src/helpers/handlers')
+//console.log(argv)
+
+
+let filename = process.argv[2]
+let src = ''
+ if ( process.argv[2].match(/runner/) ) {
+    filename = '/Users/zag/Work/projects/pod6-blog-builder/pub/20090702/n1.pod6'
+    src = fs.readFileSync(filename).toString()
+    
+} else {
+    src = fs.readFileSync(0, 'utf-8');
+}
+const p = require('pod6')
+const { toHtml }  = p
+//const t = p.parse(src)
+//console.log(log(t))
+
+let IMAGES = []
+let DATA = {}
+const processCode = subUse({
+    // inside code don't wrap into <p>
+         ':text' : ( writer, processor ) => ( node, ctx, interator ) => {
+             writer.writeRaw('{`')
+             writer.writeRaw((node.value||'').replace(/\\/g, '\\\\'))
+             writer.writeRaw('`}')
+         },
+     },
+     setFn(( node, ctx ) => wrapContent( `<code><pre>`, `</pre></code>` ) )
+ );
+ const processText = ( writer, processor ) => ( node, ctx, interator ) => {
+    writer.write( (node.value || '').replace(/\n/g,' ') )
+}
+
+const handlersHtml = {
+
+'NAME':( writer, processor ) => ( node, ctx, interator ) => { 
+    const text = node.content[0].content[0]
+    DATA.TITLE=text
+},
+'TITLE':( writer, processor ) => ( node, ctx, interator ) => { 
+    const text = node.content[0].content[0]
+    DATA.TITLE=text
+},
+'pod:block': ( writer, processor ) => ( node, ctx, interator ) =>{ 
+    // collect attributes
+    // console.log(log(node))
+    // some time pod block happens inside pod6 (as mistake)
+    if (!DATA.pubdate) {
+        const conf = makeAttrs(node, ctx)
+        //console.log(log({node:node.config, 'pubdate':conf.getFirstValue('pubdate')}))
+        DATA = {...conf.asHash(), ...DATA}
+        DATA.type = conf.getFirstValue('type')
+        DATA.pubdate = conf.getFirstValue('pubdate')
+        DATA.publishUrl = conf.getFirstValue('publishUrl')
+    }
+    // console.log(log(node))
+    // console.log({a:conf.getAllValues('tags')})
+    // console.log( log(conf.asHash()))
+    node.content && interator(node.content, ctx)
+},
+'code': processCode,
+':code': processCode,
+':text':processText,
+
+
+// 'code': ( writer, processor ) => ( node, ctx, interator ) =>{ 
+//     //translit2.replace(/`/,'')
+//     const content = node.content[0].value
+//     // console.log(log(node))
+//     writer.writeRaw(`<code><pre>{\`${content}\`}</pre></code>`)
+// },
+// ':code': ( writer, processor ) => ( node, ctx, interator ) =>{ 
+//     //translit2.replace(/`/,'')
+//     const content = node.content[0].value
+//     // console.log(log(node))
+//     writer.writeRaw(`<code><pre>{\`${content}\`}</pre></code>`)
+// },
+
+'ImageBlock:namedBlock': ( writer, processor ) => ( node, ctx, interator ) =>{
+    // get image addr
+    const addr = node.content[0].value
+    const reg = new RegExp(/\s*(\w+\.\w+)\s+(.+)/g)
+    let re 
+    while ( (re  = reg.exec(addr)) !== null ) {
+            const filename = re[1]
+            const alt = re[2]
+            // proccess every element as standalone =Image
+            interator( processor(`=for Image\n${filename}`), ctx)
+    }
+},
+'Image:namedBlock': ( writer, processor ) => ( node, ctx, interator ) =>{
+    // get image addr
+    const addr = node.content[0].value
+    if ( addr ) {
+    // clean up addr
+
+    const filename = addr.replace(/\s+/g,'')
+    writer.writeRaw(`<img src="${filename}"/>`)
+    }
+   
+}
+}
+const writerHtml = require('pod6/src/writerHtml')
+function WriterReact(){
+    writerHtml.apply(this, arguments)
+    // escape function for output
+    const prevEscape = this.escape
+    this.escape = (...args) => {
+        const res =  prevEscape(args)
+        return res.replace(/({|})/g,'{\'$1\'}')
+    }
+}
+const util = require('util')
+util.inherits(WriterReact, writerHtml)
+ finalExporter = toHtml({writer:WriterReact}).use({
+    ...handlersHtml,
+    'DESCRIPTION':( writer, processor ) => ( node, ctx, interator ) => {
+    const r = toHtml().use({...handlersHtml}).run(node.content)
+    DATA.DESCR = r.toString()
+//    console.log(log(node))
+},
+'Image:namedBlock': ( writer, processor ) => ( node, ctx, interator ) =>{
+    // console.log(log(node.content))
+    // get image addr
+    const addr = node.content[0].value
+    if ( addr ) {
+    // clean up addr
+
+    const filename = addr.replace(/\s+/g,'')
+    IMAGES.push(filename)
+    writer.writeRaw(`{Image().t${IMAGES.length-1}}`)
+    }
+   
+}
+})
+
+const res = finalExporter.run(src)
+//console.log(res.errors)
+
+// make JSON for output
+const result = {
+    TAGS: DATA.tags,
+    type:DATA.type,
+    TITLE:(DATA.TITLE || '' ).replace(/\`/g,'\\\`'), // #replace ` to \` in title
+    html:res.toString(),
+    error: res.errors,
+    LANG:null,
+    DESCR:DATA.DESCR,
+    Filename : '',
+    jsreact:'',
+    src,
+    PUBDATE:DATA.pubdate,
+    IMAGES,
+    publishUrl:DATA.publishUrl||null,
+    images_prefix: (argv.images_prefix||'').replace(/\/$/g,''),
+    jsreact: argv.jsreact,
+}
+// console.log(log(result))
+console.log(log(result))
+let imagesJs = ''
+let socialImage = ''
+if (result.IMAGES.length > 0  ) {
+    // always set first image as social icons
+    socialImage = 'socialImage={Image().t0_}'
+    // escape slash from regex
+    const images_prefix = (result.images_prefix || '').replace(/(\/)+/g,'\/')
+    let queies = result.IMAGES.map((image,index)=>{return `
+    t${index}: file( absolutePath: {regex: "/${images_prefix}\\\/${image}\$/"}) {
+        childImageSharp {
+             fluid(maxWidth: 1024) {
+                ...GatsbyImageSharpFluid
+                presentationWidth
+              }
+
+          }
+        publicURL
+        ext
+ }
+`}).join("\n")
+    let returnJs = result.IMAGES.map((image,index)=>{return `
+    t${index}: data['t${index}'].childImageSharp ? NonStretchedImage(data['t${index}'].childImageSharp) : <img src={ data['t${index}'].publicURL }/>, // t${index}: <Img fluid={data['t${index}'].childImageSharp.fluid} />, 
+    t${index}_: data['t${index}'].publicURL,
+    `}).join("\n")
+
+     imagesJs = `const Image = () => {
+    const data = useStaticQuery(graphql\`
+      query {
+            ${queies}
+      }
+      \`)
+      const NonStretchedImage = props => {
+        let normalizedProps = props
+        if (props.fluid && props.fluid.presentationWidth) {
+          normalizedProps = {
+            ...props,
+            style: {
+              ...(props.style || {}),
+              maxWidth: props.fluid.presentationWidth,
+              margin: "0 auto", // Used to center the image
+            },
+          }
+         }
+         return <Img {...normalizedProps}/>
+      }
+    // console.log({data:data.placeholderImage})
+    return { 
+        ${returnJs}
+     }
+  }
+`
+}
+// make react file
+const resultReact =`
+import React from "react"
+import { Link } from "gatsby"
+import { useStaticQuery, graphql } from "gatsby"
+import Img from "gatsby-image"
+
+import Layout from "../src/components/Layout"
+import Post from "../src/components/Post"
+import { useSiteMetadata } from '../src/hooks'
+
+import SEO from "../src/components/seo"
+${imagesJs}
+const postTitle = \`${result.TITLE}\`
+
+const SecondPage = () => {
+  const { title: siteTitle, subtitle: siteSubtitle } = useSiteMetadata();
+  return <Layout title={\`\${postTitle} - \${siteTitle}\`} ${socialImage}>
+    <SEO title={postTitle} />
+    <Post title={postTitle} >
+    ${result.html}
+    </Post>
+  </Layout>
+}
+
+export default SecondPage
+`
+if (result.jsreact) {
+    fs.writeFileSync(result.jsreact, resultReact, 'utf-8')
+} else {
+resultReact
+}

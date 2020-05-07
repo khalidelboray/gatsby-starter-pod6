@@ -1,12 +1,12 @@
 
-# Gatsby Lumen pod6
+# Gatsby starter pod6
 
 Lumen is a minimal, lightweight and mobile-first starter for creating blogs uses
 [Gatsby](https://github.com/gatsbyjs/gatsby).
 
 This is a fork of
 [gatsby-starter-lumen](https://github.com/alxshelepenok/gatsby-starter-lumen)
-updated for support pod6 markup languge.
+updated for support [pod6|https://github.com/zag/js-pod6/blob/master/doc/S26-documentation.pod6] markup languge.
 
 ## Features
 + Beautiful typography inspired by [matejlatin/Gutenberg](https://github.com/matejlatin/Gutenberg).
@@ -45,7 +45,8 @@ updated for support pod6 markup languge.
 
 ## Getting Started
 Install this starter (assuming Gatsby is installed) by running from your CLI:
-`gatsby new lumen-pod6 https://github.com/zag/gatsby-starter-pod6`
+
+`gatsby new gatsby-pod6 https://github.com/zag/gatsby-starter-pod6`
 
 #### Running in Development
 `gatsby develop`
@@ -55,7 +56,7 @@ Install this starter (assuming Gatsby is installed) by running from your CLI:
 
 #### Deploy with Netlify
 
-##### WARNING !    set **yarn export** as  Build command in Netlify!
+##### WARNING !    set __yarn export__ as  Build command in Netlify!
 ![](https://imgur.com/download/znORIxi/)
 
 
@@ -67,5 +68,5 @@ After clicking that button, you’ll authenticate with GitHub and choose a repos
 
 ## Screenshot
 
-![](https://prnt.sc/sclyxv)
+![](https://imgur.com/download/0iJaHQY/)
 

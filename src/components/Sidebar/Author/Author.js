@@ -3,16 +3,16 @@ import React from 'react';
 import { withPrefix, Link } from 'gatsby';
 import styles from './Author.module.scss';
 
-type Props = {
-  author: {
-    name: string,
-    bio: string,
-    photo: string
-  },
-  isIndex: ?boolean
-};
+// type Props = {
+//   author: {
+//     name: string,
+//     bio: string,
+//     photo: string
+//   },
+//   isIndex: ?boolean
+// };
 
-const Author = ({ author, isIndex }: Props) => (
+const Author = ({ author, isIndex }) => (
   <div className={styles['author']}>
     <Link to="/">
       <img
@@ -33,7 +33,7 @@ const Author = ({ author, isIndex }: Props) => (
         <Link className={styles['author__title-link']} to="/">{author.name}</Link>
       </h2>
     )}
-    <p className={styles['author__subtitle']}>{author.bio}</p>
+    <div className={styles['author__subtitle']} dangerouslySetInnerHTML={{ __html: author.bio }} />
   </div>
 );
 

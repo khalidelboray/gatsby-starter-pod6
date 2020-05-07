@@ -1,20 +1,12 @@
-// @flow strict
-import React from 'react';
-import { graphql } from 'gatsby';
-import Layout from '../components/Layout';
-import Sidebar from '../components/Sidebar';
-import Feed from '../components/Feed';
-import Page from '../components/Page';
-import Pagination from '../components/Pagination';
+import React from "react"
+import { Link } from "gatsby"
 import { useSiteMetadata } from '../hooks';
-import type { PageContext, AllMarkdownRemark } from '../types';
-
-type Props = {
-  data: AllMarkdownRemark,
-  pageContext: PageContext
-};
-
-const IndexTemplate = ({ data, pageContext }: Props) => {
+import Layout from '../components/Layout'
+import Sidebar from '../components/Sidebar'
+import Page from '../components/Page'
+import Feed from '../components/Feed'
+import Pagination from '../components/Pagination';
+const IndexTemplate = ({ data, pageContext }) => {
   const { title: siteTitle, subtitle: siteSubtitle } = useSiteMetadata();
 
   const {
@@ -29,46 +21,45 @@ const IndexTemplate = ({ data, pageContext }: Props) => {
   const { edges } = data.allMarkdownRemark;
   const pageTitle = currentPage > 0 ? `Posts - Page ${currentPage} - ${siteTitle}` : siteTitle;
 
-  return (
-    <Layout title={pageTitle} description={siteSubtitle}>
-      <Sidebar isIndex />
-      <Page>
-        <Feed edges={edges} />
-        <Pagination
-          prevPagePath={prevPagePath}
-          nextPagePath={nextPagePath}
-          hasPrevPage={hasPrevPage}
-          hasNextPage={hasNextPage}
-        />
-      </Page>
-    </Layout>
-  );
+  // return (
+  //   <Layout title={pageTitle} description={siteSubtitle}>
+  //     <Sidebar isIndex />
+  //     <Page>
+  //       <Feed edges={edges} />
+  //       <Pagination
+  //         prevPagePath={prevPagePath}
+  //         nextPagePath={nextPagePath}
+  //         hasPrevPage={hasPrevPage}
+  //         hasNextPage={hasNextPage}
+  //       />
+  //     </Page>
+  //   </Layout>
+  // );
 };
 
-export const query = graphql`
-  query IndexTemplate($postsLimit: Int!, $postsOffset: Int!) {
-    allMarkdownRemark(
-        limit: $postsLimit,
-        skip: $postsOffset,
-        filter: { frontmatter: { template: { eq: "post" }, draft: { ne: true } } },
-        sort: { order: DESC, fields: [frontmatter___date] }
-      ){
-      edges {
-        node {
-          fields {
-            slug
-            categorySlug
-          }
-          frontmatter {
-            title
-            date
-            category
-            description
-          }
-        }
-      }
-    }
-  }
-`;
+export default ({ pageContext }) => {
+  const { title: siteTitle, subtitle: siteSubtitle } = useSiteMetadata();
+  const {items} = pageContext
+  const pageTitle = 0 > 0 ? `Posts -  ${siteTitle}` : siteTitle;
+  const {
+    currentPage,
+    hasNextPage,
+    hasPrevPage,
+    prevPagePath,
+    nextPagePath
+  } = pageContext;
 
-export default IndexTemplate;
+
+  return  <Layout title={pageTitle} description={siteSubtitle}>
+    <Sidebar/>
+    <Page>
+      <Feed items={items} pageContext = { pageContext} />
+      <Pagination
+        prevPagePath={prevPagePath}
+        nextPagePath={nextPagePath}
+        hasPrevPage={hasPrevPage}
+        hasNextPage={hasNextPage}
+      />
+    </Page>
+  </Layout>
+}

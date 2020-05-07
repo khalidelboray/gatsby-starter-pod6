@@ -1,12 +1,12 @@
 import React, { useRef, useEffect } from 'react';
 import styles from './Page.module.scss';
 
-type Props = {
-  title?: string,
-  children: React.Node
-};
+// type Props = {
+//   title?: string,
+//   children: React.Node
+// };
 
-const Page = ({ title, children }: Props) => {
+const Page = ({ title, children }) => {
   const pageRef = useRef();
 
   useEffect(() => {

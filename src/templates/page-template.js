@@ -1,48 +1,57 @@
-// @flow strict
-import React from 'react';
-import { graphql } from 'gatsby';
-import Layout from '../components/Layout';
-import Sidebar from '../components/Sidebar';
-import Page from '../components/Page';
+import React from "react"
+import { Link } from "gatsby"
 import { useSiteMetadata } from '../hooks';
-import type { MarkdownRemark } from '../types';
-
-type Props = {
-  data: {
-    markdownRemark: MarkdownRemark
-  }
-};
-
-const PageTemplate = ({ data }: Props) => {
+import Layout from '../components/Layout'
+import Sidebar from '../components/Sidebar'
+import Page from '../components/Page'
+import Feed from '../components/Feed'
+const IndexTemplate = ({ data, pageContext }) => {
   const { title: siteTitle, subtitle: siteSubtitle } = useSiteMetadata();
-  const { html: pageBody } = data.markdownRemark;
-  const { frontmatter } = data.markdownRemark;
-  const { title: pageTitle, description: pageDescription, socialImage } = frontmatter;
-  const metaDescription = pageDescription !== null ? pageDescription : siteSubtitle;
 
-  return (
-    <Layout title={`${pageTitle} - ${siteTitle}`} description={metaDescription} socialImage={socialImage} >
-      <Sidebar />
-      <Page title={pageTitle}>
-        <div dangerouslySetInnerHTML={{ __html: pageBody }} />
-      </Page>
-    </Layout>
-  );
+  const {
+    currentPage,
+    hasNextPage,
+    hasPrevPage,
+    prevPagePath,
+    nextPagePath
+  } = pageContext;
+
+
+  const { edges } = data.allMarkdownRemark;
+  const pageTitle = currentPage > 0 ? `Posts - Page ${currentPage} - ${siteTitle}` : siteTitle;
+
+  // return (
+  //   <Layout title={pageTitle} description={siteSubtitle}>
+  //     <Sidebar isIndex />
+  //     <Page>
+  //       <Feed edges={edges} />
+  //       <Pagination
+  //         prevPagePath={prevPagePath}
+  //         nextPagePath={nextPagePath}
+  //         hasPrevPage={hasPrevPage}
+  //         hasNextPage={hasNextPage}
+  //       />
+  //     </Page>
+  //   </Layout>
+  // );
 };
 
-export const query = graphql`
-  query PageBySlug($slug: String!) {
-    markdownRemark(fields: { slug: { eq: $slug } }) {
-      id
-      html
-      frontmatter {
-        title
-        date
-        description
-        socialImage
-      }
-    }
-  }
-`;
+export default ({ pageContext: { item } }) => {
+  const { title: siteTitle, subtitle: siteSubtitle } = useSiteMetadata();
+  const pageTitle = siteTitle;
+  // const {
+  //   currentPage,
+  //   hasNextPage,
+  //   hasPrevPage,
+  //   prevPagePath,
+  //   nextPagePath
+  // } = pageContext;
 
-export default PageTemplate;
+
+  return  <Layout title={pageTitle} description={siteSubtitle}>
+    <Sidebar/>
+    <Page title={item.TITLE}>
+    <div dangerouslySetInnerHTML={{ __html: item.html }} />
+    </Page>
+  </Layout>
+}

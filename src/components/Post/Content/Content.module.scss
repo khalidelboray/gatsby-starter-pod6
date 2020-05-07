@@ -43,6 +43,11 @@
     & a {
       text-decoration: underline
     }
+    & dd {
+      max-width: $layout-post-width;
+      margin-left: 1em;
+      margin-right: auto
+    }
 
     & * {
       max-width: $layout-post-width;
@@ -52,6 +57,14 @@
 
     & img {
       max-width: 100%;
+      margin-top: 0.25em;
+    }
+    & div p {
+      @include line-height(1);
+      @include margin-bottom(1);
+    }
+    & sup {
+      vertical-align: baseline;
     }
 
   }

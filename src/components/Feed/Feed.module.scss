@@ -29,6 +29,11 @@
     }
 
     &-description {
+      img {
+        display: block;
+        border: 0;
+        margin: 1em auto;
+      }
       font-size: $typographic-base-font-size;
       @include line-height(1);
       @include margin-bottom(.75);

@@ -2,23 +2,23 @@
 import React from 'react';
 import Helmet from 'react-helmet';
 import { withPrefix } from 'gatsby';
-import type { Node as ReactNode } from 'react';
+// import type { Node as ReactNode } from 'react';
 import { useSiteMetadata } from '../../hooks';
 import styles from './Layout.module.scss';
 
-type Props = {
-  children: ReactNode,
-  title: string,
-  description?: string,
-  socialImage? :string
-};
+// type Props = {
+//   children: ReactNode,
+//   title: string,
+//   description?: string,
+//   socialImage? :string
+// };
 
 const Layout = ({
   children,
   title,
   description,
   socialImage
-}: Props) => {
+}) => {
   const { author, url } = useSiteMetadata();
   const metaImage = socialImage != null ? socialImage : author.photo;
   const metaImageUrl = url + withPrefix(metaImage);

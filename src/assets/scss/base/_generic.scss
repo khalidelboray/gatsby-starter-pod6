@@ -120,8 +120,8 @@ ul {
 }
 
 p {
-  @include line-height(1);
-  @include margin-bottom(1);
+   @include line-height(1);
+   @include margin-bottom(1);
 }
 
 blockquote {

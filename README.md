@@ -6,7 +6,7 @@ Lumen is a minimal, lightweight and mobile-first starter for creating blogs uses
 
 This is a fork of
 [gatsby-starter-lumen](https://github.com/alxshelepenok/gatsby-starter-lumen)
-updated for support [pod6|https://github.com/zag/js-pod6/blob/master/doc/S26-documentation.pod6] markup languge.
+updated for support [pod6|https://docs.raku.org/language/pod] markup languge.
 
 ## Features
 + Beautiful typography inspired by [matejlatin/Gutenberg](https://github.com/matejlatin/Gutenberg).

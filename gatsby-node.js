@@ -133,7 +133,7 @@ exports.createPages = async ({ actions, graphql }) => {
   }
     all.forEach(item => {
       console.log(item.publishUrl)
-      const template = (item.type || 'page') !== 'page' ? item.jsreact : `./src/templates/page-template.js`
+      const template = (item.type || 'page') !== 'page_STATIC' ? item.jsreact : `./src/templates/page-template.js`
       createPage({
         path: item.publishUrl,
         component: require.resolve(template),

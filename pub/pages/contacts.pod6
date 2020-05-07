@@ -1,0 +1,9 @@
+=begin pod  :pubdate('2020-05-07 10:00:00') :tags<pod6> :type('page') :publishUrl('/pages/contacts')
+=TITLE ✉️ Contacts
+=head2 You can contact me in the following ways!
+
+=item1  email
+=item1  skype
+=item2  call me!
+
+=end pod

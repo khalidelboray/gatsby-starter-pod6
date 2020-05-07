@@ -1,0 +1,17 @@
+=begin pod  :pubdate('2020-05-07 10:00:00') :tags<pod6 pod> :type('page') :publishUrl('/pages/about')
+=TITLE ✌️About page
+=head2 Check this text!
+=para
+Use a C<for> loop instead.N<The Raku C<for> loop is far more
+powerful than its Perl 5 predecessor.> Preferably with an explicit
+iterator variable.
+
+Options B<are>:
+
+=item1  Animal
+=item2     I<Vertebrate>
+=item2     B<Invertebrate>
+
+=Image gatsby-astronaut.png
+=end pod
+

@@ -90,10 +90,6 @@ Install this starter (assuming Gatsby is installed) by running from your CLI:
 
 #### Deploy with Netlify
 
-##### WARNING !    set __yarn export__ as  Build command in Netlify!
-![](https://imgur.com/download/znORIxi/)
-
-
 Netlify CMS can run in any frontend web environment, but the quickest way to try it out is by running it on a pre-configured starter site with Netlify. Use the button below to build and deploy your own copy of the repository:
 
 <a href="https://app.netlify.com/start/deploy?repository=https://github.com/zag/gatsby-starter-pod6" target="_blank"><img src="https://www.netlify.com/img/deploy/button.svg" alt="Deploy to Netlify"></a>

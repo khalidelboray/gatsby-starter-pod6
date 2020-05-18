@@ -18,14 +18,14 @@ updated for support [pod6|https://docs.raku.org/language/pod] markup languge.
 + Disqus Comments support.
 
 ## pod6 extensions
-+ `=Image` - use images in posts
+### `=Image` - use images in posts
 
 Example:
 
 `=Image gatsby-astronaut.png
 `
 
-+ Video support `=Video`
+### Video support `=Video`
 ```
  =for Video  :width(958) :height("539")
  = :src("https://www.youtube.com/embed/20SHvU2PKsM")
@@ -40,7 +40,7 @@ or
 =Video https://www.youtube.com/embed/20SHvU2PKsM
 ``
 
-+ Handle `=Html`
+### Handle `=Html`
 
 ```
 =Html

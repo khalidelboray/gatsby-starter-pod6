@@ -11,22 +11,12 @@ const fs = require('fs')
 const makeAttrs = require('pod6/src/helpers/config').makeAttrs
 const wrapContent = require('pod6/src/helpers/handlers').wrapContent
 const { subUse, setFn } = require('pod6/src/helpers/handlers')
-//console.log(argv)
 
 
 let filename = process.argv[2]
-let src = ''
- if ( process.argv[2].match(/runner/) ) {
-    filename = '/Users/zag/Work/projects/pod6-blog-builder/pub/20090702/n1.pod6'
-    src = fs.readFileSync(filename).toString()
-    
-} else {
-    src = fs.readFileSync(0, 'utf-8');
-}
+let src = fs.readFileSync(0, 'utf-8');
 const p = require('pod6')
 const { toHtml }  = p
-//const t = p.parse(src)
-//console.log(log(t))
 
 let IMAGES = []
 let DATA = {}
@@ -58,6 +48,7 @@ const handlersHtml = {
     // collect attributes
     // console.log(log(node))
     // some time pod block happens inside pod6 (as mistake)
+    
     if (!DATA.pubdate) {
         const conf = makeAttrs(node, ctx)
         //console.log(log({node:node.config, 'pubdate':conf.getFirstValue('pubdate')}))
@@ -76,18 +67,6 @@ const handlersHtml = {
 ':text':processText,
 
 
-// 'code': ( writer, processor ) => ( node, ctx, interator ) =>{ 
-//     //translit2.replace(/`/,'')
-//     const content = node.content[0].value
-//     // console.log(log(node))
-//     writer.writeRaw(`<code><pre>{\`${content}\`}</pre></code>`)
-// },
-// ':code': ( writer, processor ) => ( node, ctx, interator ) =>{ 
-//     //translit2.replace(/`/,'')
-//     const content = node.content[0].value
-//     // console.log(log(node))
-//     writer.writeRaw(`<code><pre>{\`${content}\`}</pre></code>`)
-// },
 
 'ImageBlock:namedBlock': ( writer, processor ) => ( node, ctx, interator ) =>{
     // get image addr
@@ -101,7 +80,7 @@ const handlersHtml = {
             interator( processor(`=for Image\n${filename}`), ctx)
     }
 },
-'Image:namedBlock': ( writer, processor ) => ( node, ctx, interator ) =>{
+'Image:namedBlock' : ( writer, processor ) => ( node, ctx, interator ) =>{
     // get image addr
     const addr = node.content[0].value
     if ( addr ) {
@@ -111,7 +90,30 @@ const handlersHtml = {
     writer.writeRaw(`<img src="${filename}"/>`)
     }
    
-}
+},
+// =Html 
+'Html:namedBlock' : ( writer, processor ) => ( node, ctx, interator ) =>{
+    const html = node.content[0].value.replace(/\n/g,'')
+    writer.writeRaw(`<div  dangerouslySetInnerHTML={{ __html:\`${html}\`}} />`)
+},
+'Video:namedBlock': ( writer, processor ) => ( node, ctx, interator ) =>{ 
+    // collect attributes
+    //set Flag if Video component exists
+    DATA.isVideoExists = true
+    // Insert Video component
+    writer.writeRaw('<Video ')
+    const putAttr = (name, value ) => {
+        if ( value === undefined  ) {  return  }
+        writer.writeRaw(` ${name}="`)
+        writer.write(value)
+        writer.writeRaw('"')
+    }
+    const conf = makeAttrs(node, ctx);
+    ['width', 'height', 'title' ].map(  attrName => putAttr( attrName, conf.getFirstValue( attrName ) )  )
+    const src = conf.getFirstValue('src') || node.content[0].value
+    putAttr('src', src)
+    writer.writeRaw(' />') // close Video tag
+},
 }
 const writerHtml = require('pod6/src/writerHtml')
 function WriterReact(){
@@ -132,7 +134,7 @@ util.inherits(WriterReact, writerHtml)
     DATA.DESCR = r.toString()
 //    console.log(log(node))
 },
-'Image:namedBlock': ( writer, processor ) => ( node, ctx, interator ) =>{
+'Image:namedBlock': ( writer, processor ) => ( node, ctx, interator ) => {
     // console.log(log(node.content))
     // get image addr
     const addr = node.content[0].value
@@ -143,8 +145,7 @@ util.inherits(WriterReact, writerHtml)
     IMAGES.push(filename)
     writer.writeRaw(`{Image().t${IMAGES.length-1}}`)
     }
-   
-}
+ }
 })
 
 const res = finalExporter.run(src)
@@ -168,7 +169,6 @@ const result = {
     images_prefix: (argv.images_prefix||'').replace(/\/$/g,''),
     jsreact: argv.jsreact,
 }
-// console.log(log(result))
 console.log(log(result))
 let imagesJs = ''
 let socialImage = ''
@@ -222,7 +222,24 @@ if (result.IMAGES.length > 0  ) {
   }
 `
 }
-// make react file
+// Video
+// <Video width="958" height="539" src="https://www.youtube.com/embed/GqmLCMiUrdo" title="Title of the video "/>
+const VideoComponent = `const Video = ({ src, title, ...props }) => (
+    <div className="video">
+      <iframe
+        src={src}
+        title={title}
+        width={props.width || '100%'} height={props.height || '500px'}
+        allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture"
+        frameBorder="0"
+        webkitallowfullscreen="true"
+        mozallowfullscreen="true"
+        allowFullScreen
+      />
+    </div>
+  )`
+
+  // make react file
 const resultReact =`
 import React from "react"
 import { Link } from "gatsby"
@@ -234,6 +251,7 @@ import Post from "../src/components/Post"
 import { useSiteMetadata } from '../src/hooks'
 
 import SEO from "../src/components/seo"
+${ DATA.isVideoExists ? VideoComponent : ''}
 ${imagesJs}
 const postTitle = \`${result.TITLE}\`
 

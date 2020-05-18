@@ -36,6 +36,25 @@ Insert image C<=Image gatsby-astronaut.png> :
 
 =Image gatsby-astronaut.png
 
+For insert video use C<=Video> block. The following examples are equivalents:
+=begin code
+=for Video  :width(958) :height("539")
+= :src("https://www.youtube.com/embed/20SHvU2PKsM")
+= :title("Title of the video ")
+
+=for Video  :width(958) :height("539") :title("Title of the video ")
+https://www.youtube.com/embed/20SHvU2PKsM
+
+=end code 
+
+The short form is:
+
+C<=Video https://www.youtube.com/embed/20SHvU2PKsM>
+
+
+=for Video  :width(958) :height("539")
+= :src("https://www.youtube.com/embed/20SHvU2PKsM")
+= :title("Title of the video ")
 
 
 Items levels

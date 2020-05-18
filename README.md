@@ -17,6 +17,40 @@ updated for support [pod6|https://docs.raku.org/language/pod] markup languge.
 + Google Analytics support.
 + Disqus Comments support.
 
+## pod6 extensions
++ `=Image` - use images in posts
+
+Example:
+
+`=Image gatsby-astronaut.png
+`
+
++ Video support `=Video`
+```
+ =for Video  :width(958) :height("539")
+ = :src("https://www.youtube.com/embed/20SHvU2PKsM")
+ = :title("Title of the video ")
+
+ =for Video  :width(958) :height("539") :title("Title of the video ")
+https://www.youtube.com/embed/20SHvU2PKsM
+```
+or
+
+``
+=Video https://www.youtube.com/embed/20SHvU2PKsM
+``
+
++ Handle `=Html`
+
+```
+=Html
+<iframe width="958" height="539" src="https://www.youtube.com/embed/20SHvU2PKsM" 
+frameborder="0"
+allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture"
+allowfullscreen></iframe>
+
+```
+
 ## Folder Structure
 ```
 ├── GNUmakefile

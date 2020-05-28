@@ -90,7 +90,7 @@ Install this starter (assuming Gatsby is installed) by running from your CLI:
 
 #### Deploy with Netlify
 
-[![Create a blog with pod6](https://i.ytimg.com/vi/s6jQC3eVazY/maxresdefault.jpg)](https://www.youtube.com/watch?v=s6jQC3eVazY)
+[![Create a blog with pod6](https://i.ytimg.com/vi/s6jQC3eVazY/maxresdefault.jpg)](https://www.youtube.com/watch?v=s6jQC3eVazY "Create a blog with pod6")
 
 
 Netlify CMS can run in any frontend web environment, but the quickest way to try it out is by running it on a pre-configured starter site with Netlify. Use the button below to build and deploy your own copy of the repository:

@@ -90,6 +90,7 @@ Install this starter (assuming Gatsby is installed) by running from your CLI:
 
 #### Deploy with Netlify
 
+Video:
 [![Create a blog with pod6](https://i.ytimg.com/vi/s6jQC3eVazY/maxresdefault.jpg)](https://www.youtube.com/watch?v=s6jQC3eVazY "Create a blog with pod6")
 
 
